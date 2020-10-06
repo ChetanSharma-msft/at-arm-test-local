@@ -1,0 +1,40 @@
+﻿
+.dialog-container-view-feedback {
+    background: transparent !important;
+    padding: 0rem !important;
+}
+
+.input-fields-margin-between-add-post {
+    margin-top: 1rem;
+}
+
+.input-label-space-between {
+    margin-top: 0.3rem;
+}
+
+.dateContainer {
+    width: 55% !important;
+}
+
+.dropdown-button {
+    width: 50% !important;
+}
+
+.feedback-filter-section {
+    margin-bottom: 3rem;
+}
+
+.feedback-message {
+    font-weight: bold;
+    margin-left: 18rem;
+}
+
+.feedback-excel-section {
+    width: 100%;
+    overflow: auto;
+}
+
+/*Buttons width*/
+.id {
+    max-width: 15rem !important;
+}
