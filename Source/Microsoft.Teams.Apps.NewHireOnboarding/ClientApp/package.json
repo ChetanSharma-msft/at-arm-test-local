@@ -11,9 +11,13 @@
     "i18next": "19.4.5",
     "i18next-xhr-backend": "^3.2.2",
     "react": "16.13.1",
+    "react-data-export": "^0.6.0",
     "react-dom": "16.13.1",
     "react-i18next": "11.5.0",
-    "react-router-dom": "5.2.0"
+    "react-router-dom": "5.2.0",
+    "react-spreadsheet": "^0.4.47",
+    "tempa-xlsx": "^0.8.20",
+    "xlsx": "^0.16.8"
   },
   "scripts": {
     "start": "react-scripts start",
