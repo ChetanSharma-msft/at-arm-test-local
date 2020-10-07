@@ -10,8 +10,6 @@ import SignInSimpleStart from "../components/signin/signin-start";
 import SignInSimpleEnd from "../components/signin/signin-end";
 import Redirect from "../components/redirect";
 import ErrorPage from "../components/error-page";
-import ViewFeedbackPage from "../components/view-feedback/view-feedback-page";
-import DownloadFeedbackPage from "../components/view-feedback/download-feedback-page";
 
 export const AppRoute: React.FunctionComponent<{}> = () => {
 
@@ -23,8 +21,6 @@ export const AppRoute: React.FunctionComponent<{}> = () => {
                     <Route exact path="/signin-simple-start" component={SignInSimpleStart} />
                     <Route exact path="/signin-simple-end" component={SignInSimpleEnd} />
                     <Route exact path="/error" component={ErrorPage} />
-                    <Route exact path="/view-feedback" component={ViewFeedbackPage} />
-                    <Route exact path="/download-feedback" component={DownloadFeedbackPage} />
                     <Route component={Redirect} />
                 </Switch>
             </BrowserRouter>
