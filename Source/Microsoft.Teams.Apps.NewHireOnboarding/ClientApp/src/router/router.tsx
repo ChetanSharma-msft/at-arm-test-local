@@ -3,13 +3,15 @@
 // </copyright>
 
 import * as React from "react";
-import { Suspense } from "react";
+import { Suspense, lazy } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import SignInPage from "../components/signin/signin";
 import SignInSimpleStart from "../components/signin/signin-start";
 import SignInSimpleEnd from "../components/signin/signin-end";
 import Redirect from "../components/redirect";
 import ErrorPage from "../components/error-page";
+const ViewFeedbackPage = lazy(() => import('../components/view-feedback/view-feedback-page'));
+const DownloadFeedbackPage = lazy(() => import('../components/view-feedback/download-feedback-page'));
 
 export const AppRoute: React.FunctionComponent<{}> = () => {
 
@@ -21,6 +23,8 @@ export const AppRoute: React.FunctionComponent<{}> = () => {
                     <Route exact path="/signin-simple-start" component={SignInSimpleStart} />
                     <Route exact path="/signin-simple-end" component={SignInSimpleEnd} />
                     <Route exact path="/error" component={ErrorPage} />
+                    <Route exact path="/view-feedback" component={ViewFeedbackPage} />
+                    <Route exact path="/download-feedback" component={DownloadFeedbackPage} />
                     <Route component={Redirect} />
                 </Switch>
             </BrowserRouter>
