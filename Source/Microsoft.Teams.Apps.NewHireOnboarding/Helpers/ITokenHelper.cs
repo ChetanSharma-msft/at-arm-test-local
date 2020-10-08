@@ -15,8 +15,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
         /// Get user access token for given resource using Bot OAuth client instance.
         /// </summary>
         /// <param name="fromId">Activity from id.</param>
-        /// <param name="graphService">Resource url for which token will be acquired.</param>
         /// <returns>A task that represents security access token for given resource.</returns>
-        Task<string> GetUserTokenAsync(string fromId, string graphService);
+        Task<string> GetUserTokenAsync(string fromId);
     }
 }

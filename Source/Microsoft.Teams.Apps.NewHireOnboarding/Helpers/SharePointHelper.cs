@@ -23,6 +23,11 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
     public class SharePointHelper : ISharePointHelper
     {
         /// <summary>
+        /// Microsoft Graph API base url.
+        /// </summary>
+        private const string GraphAPIBaseURL = "https://graph.microsoft.com/";
+
+        /// <summary>
         /// Display name for topic field in SharePoint.
         /// There are multiple mappings for Topic column so use it's internal name directly.
         /// </summary>
@@ -118,7 +123,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
 
             if (cacheColumnMappingDictionary == null)
             {
-                var columnMappingResponse = await this.graphUtility.GetGraphResponseAsync(token, $"{DeepLinkConstants.GraphAPIBaseURL}/v1.0/sites/{this.options.Value.SiteTenantName}:/sites/{this.options.Value.SiteName}:/lists/{this.options.Value.NewHireCheckListName}/columns");
+                var columnMappingResponse = await this.graphUtility.GetAsync(token, $"{GraphAPIBaseURL}/v1.0/sites/{this.options.Value.SiteTenantName}:/sites/{this.options.Value.SiteName}:/lists/{this.options.Value.NewHireCheckListName}/columns");
                 if (columnMappingResponse.IsSuccessStatusCode)
                 {
                     var responseContent = await columnMappingResponse.Content.ReadAsStringAsync();
@@ -140,7 +145,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
                 columnMappingDictionary = cacheColumnMappingDictionary;
             }
 
-            var response = await this.graphUtility.GetGraphResponseAsync(token, $"{DeepLinkConstants.GraphAPIBaseURL}/v1.0/sites/{this.options.Value.SiteTenantName}:/sites/{this.options.Value.SiteName}:/lists/{this.options.Value.NewHireCheckListName}/items?expand=fields");
+            var response = await this.graphUtility.GetAsync(token, $"{GraphAPIBaseURL}/v1.0/sites/{this.options.Value.SiteTenantName}:/sites/{this.options.Value.SiteName}:/lists/{this.options.Value.NewHireCheckListName}/items?expand=fields");
 
             if (response.IsSuccessStatusCode)
             {
@@ -192,7 +197,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
                 return introductionQuestions;
             }
 
-            var response = await this.graphUtility.GetGraphResponseAsync(token, $"{DeepLinkConstants.GraphAPIBaseURL}/v1.0/sites/{this.options.Value.SiteTenantName}:/sites/{this.options.Value.SiteName}:/lists/{this.options.Value.NewHireQuestionListName}/items?expand=fields");
+            var response = await this.graphUtility.GetAsync(token, $"{GraphAPIBaseURL}/v1.0/sites/{this.options.Value.SiteTenantName}:/sites/{this.options.Value.SiteName}:/lists/{this.options.Value.NewHireQuestionListName}/items?expand=fields");
 
             if (response.IsSuccessStatusCode)
             {

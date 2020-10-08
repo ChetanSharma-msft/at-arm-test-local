@@ -12,10 +12,16 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
     using Microsoft.Teams.Apps.NewHireOnboarding.Models.Configuration;
 
     /// <summary>
+    /// Implements the methods that are defined in <see cref="ITokenHelper"/>.
     /// Helper class for token generation, validation and generate Azure Active Directory user access token for given resource, e.g. Microsoft Graph, SharePoint.
     /// </summary>
     public class TokenHelper : ITokenHelper
     {
+        /// <summary>
+        /// Microsoft Graph API base url.
+        /// </summary>
+        private const string GraphAPIBaseURL = "https://graph.microsoft.com/";
+
         /// <summary>
         /// Instance of the Microsoft Bot Connector OAuthClient class.
         /// </summary>
@@ -47,24 +53,23 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
         {
             optionsAccessor = optionsAccessor ?? throw new ArgumentNullException(nameof(optionsAccessor));
 
-            this.options = optionsAccessor.Value;
-            this.oAuthClient = oAuthClient;
-            this.connectionName = this.options.ConnectionName;
-            this.logger = logger;
+            this.options = optionsAccessor.Value ?? throw new InvalidOperationException(nameof(optionsAccessor.Value));
+            this.oAuthClient = oAuthClient ?? throw new ArgumentNullException(nameof(oAuthClient));
+            this.connectionName = this.options.ConnectionName ?? throw new InvalidOperationException(nameof(this.options.ConnectionName));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>
         /// Get user access token for given resource using Bot OAuth client instance.
         /// </summary>
         /// <param name="fromId">Activity from id.</param>
-        /// <param name="graphService">Resource url for which token will be acquired.</param>
         /// <returns>A task that represents security access token for given resource.</returns>
-        public async Task<string> GetUserTokenAsync(string fromId, string graphService)
+        public async Task<string> GetUserTokenAsync(string fromId)
         {
             try
             {
-                var token = await this.oAuthClient.UserToken.GetAadTokensAsync(fromId, this.connectionName, new Microsoft.Bot.Schema.AadResourceUrls { ResourceUrls = new string[] { graphService } }).ConfigureAwait(false);
-                return token?[graphService]?.Token;
+                var token = await this.oAuthClient.UserToken.GetAadTokensAsync(fromId, this.connectionName, new Microsoft.Bot.Schema.AadResourceUrls { ResourceUrls = new string[] { GraphAPIBaseURL } }).ConfigureAwait(false);
+                return token?[GraphAPIBaseURL]?.Token;
             }
 #pragma warning disable CA1031 // Catching general exception for any errors occurred during get user AAD access token.
             catch (Exception ex)

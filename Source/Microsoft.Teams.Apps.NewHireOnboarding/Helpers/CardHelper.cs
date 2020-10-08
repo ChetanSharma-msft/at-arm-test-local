@@ -8,7 +8,6 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
-    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Bot.Builder;
     using Microsoft.Bot.Builder.Integration.AspNet.Core;
@@ -23,12 +22,12 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
     using Microsoft.Teams.Apps.NewHireOnboarding.Models.Configuration;
     using Microsoft.Teams.Apps.NewHireOnboarding.Models.EntityModels;
     using Microsoft.Teams.Apps.NewHireOnboarding.Providers;
-    using Newtonsoft.Json;
     using Polly;
     using Polly.Contrib.WaitAndRetry;
     using Polly.Retry;
 
     /// <summary>
+    /// Implements the methods that are defined in <see cref="ICardHelper"/>.
     /// Class that helps to show cards in task module.
     /// </summary>
     public class CardHelper : ICardHelper
@@ -363,23 +362,6 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
                     throw;
                 }
             });
-        }
-
-        /// <summary>
-        /// Get Teams channel account detailing user Azure Active Directory details.
-        /// </summary>
-        /// <param name="turnContext">Context object containing information cached for a single turn of conversation with a user.</param>
-        /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task<TeamsChannelAccount> GetUserDetailAsync(
-          ITurnContext turnContext,
-          CancellationToken cancellationToken)
-        {
-            turnContext = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
-
-            var members = await ((BotFrameworkAdapter)turnContext.Adapter).GetConversationMembersAsync(turnContext, cancellationToken);
-
-            return JsonConvert.DeserializeObject<TeamsChannelAccount>(JsonConvert.SerializeObject(members[0]));
         }
     }
 }

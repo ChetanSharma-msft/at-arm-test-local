@@ -33,7 +33,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
         /// </summary>
         /// <param name="token">Microsoft Graph user access token.</param>
         /// <param name="groupId">Unique id of Azure Active Directory security group.</param>
-        /// <returns>Channels details.</returns>
+        /// <returns>Group members.</returns>
         Task<List<User>> GetGroupMemberDetailsAsync(string token, string groupId);
     }
 }

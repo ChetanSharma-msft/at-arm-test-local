@@ -24,6 +24,11 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
         private const string LoginRequestBaseUrl = "https://login.microsoftonline.com";
 
         /// <summary>
+        /// Microsoft Graph API base url.
+        /// </summary>
+        private const string GraphAPIBaseURL = "https://graph.microsoft.com/";
+
+        /// <summary>
         /// Provides a base class for sending HTTP requests and receiving HTTP responses from a resource identified by a URI.
         /// </summary>
         private readonly HttpClient httpClient;
@@ -47,6 +52,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="IGraphUtilityHelper"/> class.
         /// Gets the application token.
         /// </summary>
         /// <param name="tenantId">Unique id of tenant.</param>
@@ -56,7 +62,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
         public async Task<GraphTokenResponse> ObtainApplicationTokenAsync(string tenantId, string clientId, string clientSecret)
         {
             var requestUrl = $"{LoginRequestBaseUrl}/{tenantId}/oauth2/v2.0/token";
-            var stringQuery = $"client_id={clientId}&scope={Uri.EscapeDataString($"{DeepLinkConstants.GraphAPIBaseURL}/.default")}&client_secret={Uri.EscapeDataString(clientSecret)}&grant_type=client_credentials";
+            var stringQuery = $"client_id={clientId}&scope={Uri.EscapeDataString($"{GraphAPIBaseURL}/.default")}&client_secret={Uri.EscapeDataString(clientSecret)}&grant_type=client_credentials";
 
             using (var httpContent = new StringContent(stringQuery, Encoding.UTF8, "application/x-www-form-urlencoded"))
             {
@@ -83,7 +89,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
         /// <param name="token">Graph API application access token.</param>
         /// <param name="requestPath">Graph API request URL.</param>
         /// <returns>A task that represents a HTTP response message including the status code and data.</returns>
-        public async Task<HttpResponseMessage> GetGraphResponseAsync(string token, string requestPath)
+        public async Task<HttpResponseMessage> GetAsync(string token, string requestPath)
         {
             HttpMethod httpMethod = new HttpMethod("GET");
             using (var request = new HttpRequestMessage(httpMethod, requestPath))

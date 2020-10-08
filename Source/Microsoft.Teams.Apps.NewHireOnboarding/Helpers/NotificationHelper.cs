@@ -16,6 +16,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
     using Microsoft.Teams.Apps.NewHireOnboarding.Providers;
 
     /// <summary>
+    /// Implements the methods that are defined in <see cref="INotificationHelper"/>.
     /// A class that contains helper methods for sending survey notifications.
     /// </summary>
     public class NotificationHelper : INotificationHelper
@@ -108,6 +109,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
             if (introductionEntities == null || !introductionEntities.Any())
             {
                 this.logger.LogWarning("No introduction is found to send survey notification.");
+
                 return false;
             }
 
@@ -158,6 +160,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
             if (teamEntity == null)
             {
                 this.logger.LogWarning("No team is found to send feedback notification");
+
                 return false;
             }
             else
@@ -167,6 +170,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
                 try
                 {
                     await this.cardHelper.SendProActiveNotificationCardAsync(notificationCard, teamEntity.TeamId, teamEntity.ServiceUrl);
+
                     return true;
                 }
 #pragma warning disable CA1031 // Catching general exception for any errors occurred during send feedback notification card to user.
@@ -174,6 +178,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
 #pragma warning disable CA1031 // Catching general exception for any errors occurred during send feedback notification card to user.
                 {
                     this.logger.LogError(ex, $"Error while performing retry logic to send feedback notification to team: {teamEntity.TeamId}.");
+
                     return false;
                 }
             }

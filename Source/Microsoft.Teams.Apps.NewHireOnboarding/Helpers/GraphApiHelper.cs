@@ -23,6 +23,8 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
 #pragma warning restore SA1135 // Application requires both Graph v1.0 and beta SDKs which needs to add extern reference. More details can be found here : https://github.com/microsoftgraph/msgraph-beta-sdk-dotnet
 
     /// <summary>
+    /// Implements the methods that are defined in <see cref="ITeamMembership"/>.
+    /// Implements the methods that are defined in <see cref="IUserProfile"/>.
     /// The class that represent the helper methods to access Microsoft Graph API.
     /// </summary>
     public class GraphApiHelper : ITeamMembership, IUserProfile
@@ -137,7 +139,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
 
                 return stream;
             }
-            catch (Microsoft.Graph.ServiceException ex)
+            catch (ServiceException ex)
             {
                 this.logger.LogInformation($"Graph API getting user photo error- {ex.Message}");
                 if (ex.StatusCode == System.Net.HttpStatusCode.NotFound && ex.RawResponseBody.Contains("The photo wasn't found.", StringComparison.InvariantCultureIgnoreCase))

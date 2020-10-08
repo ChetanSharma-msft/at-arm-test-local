@@ -115,11 +115,15 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
             learningPlan = learningPlan ?? throw new ArgumentNullException(nameof(learningPlan));
 
             // Learning plan list card we are explicitly added ‘=>’ to split learning plan and learning content before sending the message back to Bot,
-            // here we are checking lenght of the message is coming from tap event.
+            // here we are checking length of the message is coming from tap event.
             if (learningPlan.Split("=>").Length != 3)
             {
                 return null;
             }
+
+            var learningWeek = learningPlan.Split("=>")[0]?.Trim();
+            var plan = learningPlan.Split("=>")[1]?.Trim();
+            var taskName = learningPlan.Split("=>")[2]?.Trim();
 
             // Get learning plan data for selected learning content.
             var learningPlans = await this.GetCompleteLearningPlansAsync();
@@ -132,7 +136,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
             }
 
             // filtering out selected learning plan content from list card items.
-            var selectedWeekLearningPlan = learningPlans.Where(learningContent => learningContent.CompleteBy.ToUpperInvariant() == learningPlan.Split("=>")[0].Trim().ToUpperInvariant());
+            var selectedWeekLearningPlan = learningPlans.Where(learningContent => learningContent.CompleteBy.ToUpperInvariant() == learningWeek.ToUpperInvariant());
 
             if (selectedWeekLearningPlan == null)
             {
@@ -142,9 +146,9 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
             }
 
             var weeklyLearningPlan = selectedWeekLearningPlan.Where(
-                listItem => listItem.Topic.ToUpperInvariant() == learningPlan.Split("=>")[1]?.Trim().ToUpperInvariant()
+                listItem => listItem.Topic.ToUpperInvariant() == plan.ToUpperInvariant()
                 && listItem.TaskName.Contains(
-                    learningPlan.Split("=>")[2]?.Trim(), StringComparison.InvariantCultureIgnoreCase))?.FirstOrDefault();
+                    taskName, StringComparison.InvariantCultureIgnoreCase))?.FirstOrDefault();
 
             if (weeklyLearningPlan == null)
             {
@@ -156,7 +160,6 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
             // Create learning plan data card.
             var learningCard = LearningPlanCard.GetNewHireLearningCard(
                 this.localizer,
-                this.botOptions.Value.AppBaseUri,
                 this.sharePointOptions.Value.CompleteLearningPlanUrl,
                 weeklyLearningPlan);
 
@@ -169,7 +172,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
         /// <param name="turnContext">Complete learning plan data.</param>
         /// <param name="userBotInstalledDate">User bot installed date.</param>
         /// <returns>Learning plan list card as attachment.</returns>
-        public async Task GetWeeklylearningPlanCardAsync(
+        public async Task GetWeeklyLearningPlanCardAsync(
             ITurnContext<IMessageActivity> turnContext,
             DateTime userBotInstalledDate)
         {
@@ -193,29 +196,18 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
                 }
 
                 // Send current week learning list card.
-                var listCardAttachment = this.GetLearningPlanListCard(completeLearningPlan, week: $"{BotCommandConstants.LearningPlanWeek} {currentLearningWeek}");
+                var learningWeek = $"{BotCommandConstants.LearningPlanWeek} {currentLearningWeek}";
+                var listCardAttachment = LearningPlanListCard.GetLearningPlanListCard(
+                completeLearningPlan.Where(learningPlan => learningPlan.CompleteBy.ToUpperInvariant() == learningWeek.ToUpperInvariant()),
+                this.localizer,
+                this.localizer.GetString("LearningPlanWeekListCardTitleText", learningWeek),
+                this.botOptions.Value.ManifestId,
+                this.botOptions.Value.AppBaseUri);
+
                 await turnContext.SendActivityAsync(MessageFactory.Attachment(listCardAttachment));
             }
 
             return;
-        }
-
-        /// <summary>
-        /// Send complete learning plan card for selected week and item of the list card.
-        /// </summary>
-        /// <param name="completeLearningPlan">Complete learning plan data.</param>
-        /// <param name="week">Week to share to learning.</param>
-        /// <returns>Learning plan card as attachment.</returns>
-        public Attachment GetLearningPlanListCard(
-            IEnumerable<LearningPlanListItemField> completeLearningPlan,
-            string week)
-        {
-            return LearningPlanListCard.GetLearningPlanListCard(
-                completeLearningPlan.Where(learningPlan => learningPlan.CompleteBy.ToUpperInvariant() == week.ToUpperInvariant()),
-                this.localizer,
-                $"{week} {this.localizer.GetString("LearningPlanWeekListCardTitleText")}",
-                this.botOptions.Value.ManifestId,
-                this.botOptions.Value.AppBaseUri);
         }
     }
 }

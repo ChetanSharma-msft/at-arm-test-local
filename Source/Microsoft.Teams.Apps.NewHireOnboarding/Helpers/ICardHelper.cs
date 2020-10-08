@@ -5,9 +5,7 @@
 namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
 {
     using System.Collections.Generic;
-    using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Bot.Builder;
     using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
     using Microsoft.Teams.Apps.NewHireOnboarding.Models.EntityModels;
@@ -76,15 +74,5 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
              Attachment cardToSend,
              string conversationId,
              string serviceBasePath);
-
-        /// <summary>
-        /// Get Teams channel account detailing user Azure Active Directory details.
-        /// </summary>
-        /// <param name="turnContext">Context object containing information cached for a single turn of conversation with a user.</param>
-        /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        Task<TeamsChannelAccount> GetUserDetailAsync(
-          ITurnContext turnContext,
-          CancellationToken cancellationToken);
     }
 }

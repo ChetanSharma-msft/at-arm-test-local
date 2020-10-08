@@ -27,6 +27,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
     using Newtonsoft.Json.Linq;
 
     /// <summary>
+    /// Implements the methods that are defined in <see cref="IActivityHelper"/>.
     /// The class that represent the helper methods for activity handler.
     /// </summary>
     /// <typeparam name="T">Generic class.</typeparam>
@@ -79,6 +80,11 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
         private readonly IGraphUtilityHelper graphUtility;
 
         /// <summary>
+        /// Factory for working with welcome card attachments.
+        /// </summary>
+        private readonly IWelcomeCardFactory welcomeCardFactory;
+
+        /// <summary>
         /// A set of key/value application configuration properties for bot settings.
         /// </summary>
         private readonly IOptions<BotOptions> botOptions;
@@ -127,12 +133,13 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
         /// <param name="localizer">The current culture's string localizer.</param>
         /// <param name="dialog">Base class for all bot dialogs.</param>
         /// <param name="conversationState">State management object for maintaining conversation state.</param>
-        /// <param name="teamOperationGraphApiHelper">Helper for team operations with Microsoft Graph API.</param>
+        /// <param name="teamMembershipHelper">Helper for team operations with Microsoft Graph API.</param>
         /// <param name="userProfileGraphApiHelper">Helper for user profile operations with Microsoft Graph API.</param>
         /// <param name="introductionStorageProvider">Provider for fetching information about new joiner introduction details from storage.</param>
         /// <param name="sharePointHelper">Helper for working with SharePoint.</param>
         /// <param name="cardHelper">Helper for working with cards.</param>
         /// <param name="graphUtility">Instance of Microsoft Graph utility helper.</param>
+        /// <param name="welcomeCardFactory">Factory for working with welcome card attachments.</param>
         /// <param name="botOptions">A set of key/value application configuration properties for bot.</param>
         /// <param name="userStorageProvider">Provider for fetching information about user details from storage.</param>
         /// <param name="securityGroupSettings"> A set of key/value application configuration properties for AAD security group settings.</param>
@@ -145,12 +152,13 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
             IStringLocalizer<Strings> localizer,
             T dialog,
             ConversationState conversationState,
-            ITeamMembership teamOperationGraphApiHelper,
+            ITeamMembership teamMembershipHelper,
             IUserProfile userProfileGraphApiHelper,
             IIntroductionStorageProvider introductionStorageProvider,
             ISharePointHelper sharePointHelper,
             ICardHelper cardHelper,
             IGraphUtilityHelper graphUtility,
+            IWelcomeCardFactory welcomeCardFactory,
             IOptions<BotOptions> botOptions,
             IUserStorageProvider userStorageProvider,
             IOptions<AadSecurityGroupSettings> securityGroupSettings,
@@ -163,12 +171,13 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
             this.localizer = localizer;
             this.dialog = dialog;
             this.conversationState = conversationState;
-            this.teamOperationGraphApiHelper = teamOperationGraphApiHelper;
+            this.teamOperationGraphApiHelper = teamMembershipHelper;
             this.userProfileGraphApiHelper = userProfileGraphApiHelper;
             this.introductionStorageProvider = introductionStorageProvider;
             this.sharePointHelper = sharePointHelper;
             this.cardHelper = cardHelper;
             this.graphUtility = graphUtility;
+            this.welcomeCardFactory = welcomeCardFactory;
             this.botOptions = botOptions ?? throw new ArgumentNullException(nameof(botOptions));
             this.userStorageProvider = userStorageProvider;
             this.securityGroupSettings = securityGroupSettings ?? throw new ArgumentNullException(nameof(securityGroupSettings));
@@ -189,7 +198,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
             CancellationToken cancellationToken)
         {
             turnContext = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
-            var userDetails = await this.cardHelper.GetUserDetailAsync(turnContext, cancellationToken);
+            var userDetails = await this.GetUserDetailAsync(turnContext, cancellationToken);
 
             // Get Manager details from Microsoft Graph API.
             var myManager = await this.userProfileGraphApiHelper.GetUserManagerDetailsAsync(userGraphAccessToken);
@@ -306,7 +315,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
             turnContext = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
             taskModuleRequest = taskModuleRequest ?? throw new ArgumentNullException(nameof(taskModuleRequest));
 
-            var userDetails = await this.cardHelper.GetUserDetailAsync(turnContext, cancellationToken);
+            var userDetails = await this.GetUserDetailAsync(turnContext, cancellationToken);
             IntroductionEntity introductionEntity = await this.GenerateIntroductionEntityAsync(
                 turnContext,
                 taskModuleRequest,
@@ -458,8 +467,8 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
                 };
 
                 // Check whether the team id is human resource manager team.
-                var teamWelcomeCardAttachment = this.botOptions.Value.HumanResourceTeamId == teamsDetails.Id ? WelcomeCard.GetHumanResourceWelcomeCard(this.botOptions.Value.AppBaseUri, this.localizer)
-                    : WelcomeCard.GetTeamWelcomeCard(this.botOptions.Value.AppBaseUri, this.localizer);
+                var teamWelcomeCardAttachment = this.botOptions.Value.HumanResourceTeamId == teamsDetails.Id ? this.welcomeCardFactory.GetHumanResourceWelcomeCard()
+                    : this.welcomeCardFactory.GetTeamWelcomeCard();
                 await this.teamStorageProvider.StoreOrUpdateTeamDetailAsync(teamEntity);
                 await turnContext.SendActivityAsync(MessageFactory.Attachment(teamWelcomeCardAttachment));
             }
@@ -629,15 +638,15 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
             bool isNewHireEmployee = !securityGroupMembers.Select(row => row.Id).Contains(turnContext.Activity.From.AadObjectId);
 
             // Check user role from Graph API, based on role send the welcome card.
-            var userWelcomeCardAttachment = isNewHireEmployee ? WelcomeCard.GetNewHireWelcomeCard(this.botOptions.Value.AppBaseUri, this.localizer)
-                : WelcomeCard.GetHiringManagerWelcomeCard(this.botOptions.Value.AppBaseUri, this.localizer);
+            var userWelcomeCardAttachment = isNewHireEmployee ? this.welcomeCardFactory.GetNewHireWelcomeCard()
+                : this.welcomeCardFactory.GetHiringManagerWelcomeCard();
 
-            var userDetails = await this.cardHelper.GetUserDetailAsync(turnContext, cancellationToken);
+            var userDetails = await this.GetUserDetailAsync(turnContext, cancellationToken);
 
             // upload image to storage
             var imageStream = await this.userProfileGraphApiHelper.GetUserPhotoAsync(response.AccessToken, userDetails.AadObjectId);
             string imageUrl = string.Empty;
-            if (imageStream != null && imageStream.Length != 0)
+            if (imageStream != null && imageStream.Length > 0)
             {
                 imageUrl = await this.imageUploadProvider.UploadImageAsync(imageStream, userDetails.AadObjectId);
             }
@@ -650,7 +659,6 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
                 UserRole = isNewHireEmployee ? (int)UserRole.NewHire : (int)UserRole.HiringManager,
                 BotInstalledOn = DateTime.UtcNow,
                 UserPrincipalName = userDetails.UserPrincipalName,
-                Email = userDetails.Email,
                 Name = userDetails.Name,
                 UserProfileImageUrl = string.IsNullOrEmpty(imageUrl) ? null : imageUrl,
                 OptedIn = true,
@@ -717,6 +725,23 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
             };
 
             return introductionEntity;
+        }
+
+        /// <summary>
+        /// Get Teams channel account detailing user Azure Active Directory details.
+        /// </summary>
+        /// <param name="turnContext">Context object containing information cached for a single turn of conversation with a user.</param>
+        /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        private async Task<TeamsChannelAccount> GetUserDetailAsync(
+          ITurnContext turnContext,
+          CancellationToken cancellationToken)
+        {
+            turnContext = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
+
+            var members = await ((BotFrameworkAdapter)turnContext.Adapter).GetConversationMembersAsync(turnContext, cancellationToken);
+
+            return JsonConvert.DeserializeObject<TeamsChannelAccount>(JsonConvert.SerializeObject(members[0]));
         }
     }
 }

@@ -17,6 +17,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
     using Microsoft.Teams.Apps.NewHireOnboarding.Providers;
 
     /// <summary>
+    /// Implements the methods that are defined in <see cref="ITeamsInfoHelper"/>.
     /// Class that handles the helper methods to fetch team channel information.
     /// </summary>
     public class TeamsInfoHelper : ITeamsInfoHelper
@@ -54,8 +55,8 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
             MicrosoftAppCredentials microsoftAppCredentials,
             ILogger<TeamsInfoHelper> logger)
         {
-            this.botAdapter = botAdapter;
-            this.teamStorageProvider = teamStorageProvider;
+            this.botAdapter = botAdapter ?? throw new ArgumentNullException(nameof(botAdapter));
+            this.teamStorageProvider = teamStorageProvider ?? throw new ArgumentNullException(nameof(teamStorageProvider));
             this.microsoftAppCredentials = microsoftAppCredentials;
             this.logger = logger;
         }

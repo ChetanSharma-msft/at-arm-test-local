@@ -31,6 +31,6 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
         /// <param name="token">Graph API application access token.</param>
         /// <param name="requestPath">Graph API request URL.</param>
         /// <returns>A task that represents a HTTP response message including the status code and data.</returns>
-        Task<HttpResponseMessage> GetGraphResponseAsync(string token, string requestPath);
+        Task<HttpResponseMessage> GetAsync(string token, string requestPath);
     }
 }

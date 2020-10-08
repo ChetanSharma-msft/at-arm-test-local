@@ -30,22 +30,12 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Helpers
         Task<Attachment> GetLearningPlanCardAsync(string learningPlan);
 
         /// <summary>
-        /// Send complete learning plan cards for selected week and item of the list card.
-        /// </summary>
-        /// <param name="completeLearningPlan">Complete learning plans data.</param>
-        /// <param name="week">Week to share to learning.</param>
-        /// <returns>Learning plan card as attachment.</returns>
-        Attachment GetLearningPlanListCard(
-            IEnumerable<LearningPlanListItemField> completeLearningPlan,
-            string week);
-
-        /// <summary>
         /// Send learning plan list card for selected week.
         /// </summary>
         /// <param name="turnContext">Complete learning plan data.</param>
         /// <param name="userBotInstalledDate">User bot installed date.</param>
         /// <returns>Learning plan list card as attachment.</returns>
-        Task GetWeeklylearningPlanCardAsync(
+        Task GetWeeklyLearningPlanCardAsync(
             ITurnContext<IMessageActivity> turnContext,
             DateTime userBotInstalledDate);
     }
