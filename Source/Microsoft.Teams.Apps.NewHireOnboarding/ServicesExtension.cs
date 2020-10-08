@@ -147,6 +147,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding
             services.AddSingleton<ITokenHelper, TokenHelper>();
             services.AddSingleton<ILearningPlanHelper, LearningPlanHelper>();
             services.AddSingleton<ISharePointHelper, SharePointHelper>();
+            services.AddSingleton<IWelcomeCardFactory, WelcomeCardFactory>();
             services.AddSingleton<IActivityHelper, ActivityHelper<MainDialog>>();
             services.AddSingleton<ICardHelper, CardHelper>();
             services.AddSingleton<INotificationHelper, NotificationHelper>();

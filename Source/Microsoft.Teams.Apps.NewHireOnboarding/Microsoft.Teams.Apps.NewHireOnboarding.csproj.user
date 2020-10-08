@@ -3,7 +3,7 @@
   <PropertyGroup>
     <ActiveDebugProfile>Microsoft.Teams.Apps.NewHireOnboarding</ActiveDebugProfile>
     <ToolsVersionPromptShown>3.1</ToolsVersionPromptShown>
-    <NameOfLastUsedPublishProfile>at-neo-test - Web Deploy</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>neo-manual-deploy-test - Web Deploy</NameOfLastUsedPublishProfile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>
