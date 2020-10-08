@@ -16,6 +16,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Providers
     using Microsoft.WindowsAzure.Storage.Table;
 
     /// <summary>
+    /// Implements the methods that are defined in <see cref="IUserStorageProvider"/>.
     /// Implements storage provider which helps to storage user information in Azure Table Storage.
     /// </summary>
     public class UserStorageProvider : BaseStorageProvider, IUserStorageProvider
@@ -47,10 +48,10 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Providers
                 || string.IsNullOrWhiteSpace(userEntity.ConversationId)
                 || string.IsNullOrWhiteSpace(userEntity.ServiceUrl))
             {
-                return false;
+                throw new ArgumentNullException(nameof(userEntity));
             }
 
-            var result = await this.StoreOrUpdateEntityAsync(userEntity);
+            var result = await this.InsertOrReplaceUserAsync(userEntity);
 
             if (result == null)
             {
@@ -91,7 +92,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Providers
         {
             await this.EnsureInitializedAsync();
 
-            var userDetail = new List<UserEntity>();
+            var users = new List<UserEntity>();
             string userRoleCondition = TableQuery.GenerateFilterConditionForInt("UserRole", QueryComparisons.Equal, (int)userRole);
             TableQuery<UserEntity> query = new TableQuery<UserEntity>().Where(userRoleCondition);
             TableContinuationToken tableContinuationToken = null;
@@ -100,11 +101,11 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Providers
             {
                 var queryResponse = await this.CloudTable.ExecuteQuerySegmentedAsync(query, tableContinuationToken);
                 tableContinuationToken = queryResponse.ContinuationToken;
-                userDetail.AddRange(queryResponse?.Results);
+                users.AddRange(queryResponse?.Results);
             }
             while (tableContinuationToken != null);
 
-            return userDetail as List<UserEntity>;
+            return users;
         }
 
         /// <summary>
@@ -115,7 +116,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Providers
         {
             await this.EnsureInitializedAsync();
 
-            var userDetail = new List<UserEntity>();
+            var users = new List<UserEntity>();
             string optedInCondition = TableQuery.GenerateFilterConditionForBool("OptedIn", QueryComparisons.Equal, true);
             TableQuery<UserEntity> query = new TableQuery<UserEntity>().Where(optedInCondition);
             TableContinuationToken tableContinuationToken = null;
@@ -124,11 +125,11 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Providers
             {
                 var queryResponse = await this.CloudTable.ExecuteQuerySegmentedAsync(query, tableContinuationToken);
                 tableContinuationToken = queryResponse.ContinuationToken;
-                userDetail.AddRange(queryResponse?.Results);
+                users.AddRange(queryResponse?.Results);
             }
             while (tableContinuationToken != null);
 
-            return userDetail;
+            return users;
         }
 
         /// <summary>
@@ -136,7 +137,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Providers
         /// </summary>
         /// <param name="entity">Holds user detail entity data.</param>
         /// <returns>A task that represents user entity data is saved or updated.</returns>
-        private async Task<TableResult> StoreOrUpdateEntityAsync(UserEntity entity)
+        private async Task<TableResult> InsertOrReplaceUserAsync(UserEntity entity)
         {
             await this.EnsureInitializedAsync();
 

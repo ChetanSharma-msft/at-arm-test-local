@@ -178,7 +178,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A learning plan is not available for this week..
+        ///   Looks up a localized string similar to Learning plan is not available for this week..
         /// </summary>
         public static string CurrentWeekLearningPlanNotExistText {
             get {
@@ -259,7 +259,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to To view or download your report,  go to the Feedback tab in this channel.
+        ///   Looks up a localized string similar to To view or download your report,  go to the Feedback tab in this channel..
         /// </summary>
         public static string FeedbackReportNavigationText {
             get {
@@ -502,7 +502,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to plan.
+        ///   Looks up a localized string similar to {0} plan.
         /// </summary>
         public static string LearningPlanWeekListCardTitleText {
             get {
@@ -723,15 +723,6 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding {
         public static string ProposeMeetupButtonText {
             get {
                 return ResourceManager.GetString("ProposeMeetupButtonText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Questions :   5.
-        /// </summary>
-        public static string QuestionsTitleText {
-            get {
-                return ResourceManager.GetString("QuestionsTitleText", resourceCulture);
             }
         }
         

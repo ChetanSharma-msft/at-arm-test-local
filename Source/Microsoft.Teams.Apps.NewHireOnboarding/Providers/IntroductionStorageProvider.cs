@@ -16,6 +16,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Providers
     using Microsoft.WindowsAzure.Storage.Table;
 
     /// <summary>
+    /// Implements the methods that are defined in <see cref="IIntroductionStorageProvider"/>.
     /// Implements storage provider which helps to storage introduction information in Azure Table Storage.
     /// </summary>
     public class IntroductionStorageProvider : BaseStorageProvider, IIntroductionStorageProvider
@@ -53,7 +54,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Providers
                 return false;
             }
 
-            var result = await this.StoreOrUpdateEntityAsync(introductionEntity);
+            var result = await this.InsertOrReplaceIntroductionAsync(introductionEntity);
 
             if (result == null)
             {
@@ -183,7 +184,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Providers
         /// </summary>
         /// <param name="introductionEntity">Holds new hire introduction detail entity data.</param>
         /// <returns>A task that represents introduction entity data is saved or updated.</returns>
-        private async Task<TableResult> StoreOrUpdateEntityAsync(IntroductionEntity introductionEntity)
+        private async Task<TableResult> InsertOrReplaceIntroductionAsync(IntroductionEntity introductionEntity)
         {
             await this.EnsureInitializedAsync();
 

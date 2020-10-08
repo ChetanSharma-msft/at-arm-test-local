@@ -15,6 +15,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Providers
     using Microsoft.WindowsAzure.Storage.Table;
 
     /// <summary>
+    /// Implements the methods that are defined in <see cref="ITeamStorageProvider"/>.
     /// Implements storage provider which helps to storage team information in Azure Table Storage.
     /// </summary>
     public class TeamStorageProvider : BaseStorageProvider, ITeamStorageProvider
@@ -47,7 +48,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Providers
                 return false;
             }
 
-            var result = await this.StoreOrUpdateEntityAsync(teamEntity);
+            var result = await this.InsertOrReplaceTeamsAsync(teamEntity);
 
             if (result == null)
             {
@@ -114,7 +115,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Providers
         /// </summary>
         /// <param name="entity">Holds team idea detail entity data.</param>
         /// <returns>A task that represents team entity data is saved or updated.</returns>
-        private async Task<TableResult> StoreOrUpdateEntityAsync(TeamEntity entity)
+        private async Task<TableResult> InsertOrReplaceTeamsAsync(TeamEntity entity)
         {
             await this.EnsureInitializedAsync();
 

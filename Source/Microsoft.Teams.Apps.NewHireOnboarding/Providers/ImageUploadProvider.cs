@@ -14,6 +14,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Providers
     using Microsoft.WindowsAzure.Storage.Blob;
 
     /// <summary>
+    /// Implements the methods that are defined in <see cref="IImageUploadProvider"/>.
     /// Interface for handling Azure Blob Storage operations like uploading image to blob.
     /// </summary>
     public class ImageUploadProvider : IImageUploadProvider

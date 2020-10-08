@@ -182,7 +182,7 @@
     <comment>Share feedback button text to show on learning plan card.</comment>
   </data>
   <data name="LearningPlanWeekListCardTitleText" xml:space="preserve">
-    <value>plan</value>
+    <value>{0} plan</value>
     <comment>Complete learning plan week 1 title text for list card.</comment>
   </data>
   <data name="MoreInfoBulletPoint" xml:space="preserve">
@@ -196,10 +196,6 @@
   <data name="PostInTeamButtonText" xml:space="preserve">
     <value>Post in channel</value>
     <comment>Button text to show in team hiring manager notification card.</comment>
-  </data>
-  <data name="QuestionsTitleText" xml:space="preserve">
-    <value>Questions :   5</value>
-    <comment>Text to show in notification survey card.</comment>
   </data>
   <data name="TeamConfirmHeaderText" xml:space="preserve">
     <value>Great! Now, tell me where to post this intro.</value>
@@ -590,11 +586,11 @@
     <comment>Text to show as validation message when there is no learning plan for current week.</comment>
   </data>
   <data name="FeedbackReportNavigationText" xml:space="preserve">
-    <value>To view or download your report,  go to the Feedback tab in this channel</value>
+    <value>To view or download your report,  go to the Feedback tab in this channel.</value>
     <comment>Text to show in view feedback report card.</comment>
   </data>
   <data name="CurrentWeekLearningPlanNotExistText" xml:space="preserve">
-    <value>A learning plan is not available for this week.</value>
+    <value>Learning plan is not available for this week.</value>
     <comment>Text to show as validation message when there is no learning plan available for current week.</comment>
   </data>
 </root>

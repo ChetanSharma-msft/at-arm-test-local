@@ -10,11 +10,6 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding
     public static class DeepLinkConstants
     {
         /// <summary>
-        /// Microsoft Graph API base url.
-        /// </summary>
-        public const string GraphAPIBaseURL = "https://graph.microsoft.com/";
-
-        /// <summary>
         /// Deep link to navigate to Channels Tab.
         /// </summary>
         public const string TabBaseRedirectURL = "https://teams.microsoft.com/l/entity";
@@ -33,5 +28,10 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding
         /// Link to open file in teams.
         /// </summary>
         public const string OpenFileInTeamsURL = "https://teams.microsoft.com/_#/{0}/viewer/teams/{1}";
+
+        /// <summary>
+        /// Link to open meeting in teams.
+        /// </summary>
+        public const string MeetingLink = "https://teams.microsoft.com/l/meeting/new?subject=";
     }
 }

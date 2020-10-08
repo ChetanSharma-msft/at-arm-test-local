@@ -15,6 +15,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Providers
     using Microsoft.WindowsAzure.Storage.Table;
 
     /// <summary>
+    /// Implements the methods that are defined in <see cref="IFeedbackProvider"/>.
     /// Implements storage provider which helps to store feedback in Azure Table Storage.
     /// </summary>
     public class FeedbackProvider : BaseStorageProvider, IFeedbackProvider
