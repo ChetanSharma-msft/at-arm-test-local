@@ -90,7 +90,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Tests.Helpers
         {
             this.teamStorageProvider
                   .Setup(x => x.GetTeamDetailAsync("12345"))
-                  .Returns(Task.FromResult(NotificationHelperData.teamEntity)); // TODO: Issue with mocking this test case.
+                  .Returns(Task.FromResult(NotificationHelperData.teamEntity));
 
             this.cardHelper
                 .Setup(x => x.SendProActiveNotificationCardAsync(new Attachment(), "12345", "https://www.test.com"))

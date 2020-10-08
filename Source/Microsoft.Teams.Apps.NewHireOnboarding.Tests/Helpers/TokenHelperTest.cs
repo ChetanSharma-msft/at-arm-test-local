@@ -37,7 +37,8 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Tests.Helpers
         [TestMethod]
         public async Task GetUserTokenAsyncAsync_ThrowsException()
         {
-            var Result = await tokenHelper.GetUserTokenAsync("6d230b1a-065e-4dab-9253-caa64f2d3519", "https://graph.microsoft.com/");
+            var userObjectId = "User Azure Active Directory object id";
+            var Result = await tokenHelper.GetUserTokenAsync(userObjectId);
             Assert.IsNull(Result);
         }
     }

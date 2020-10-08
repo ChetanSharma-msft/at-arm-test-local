@@ -37,6 +37,8 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Tests.BackgroundService
                 userStorageProvider.Object,
                 learningPlanHelper.Object,
                 ConfigurationData.sharePointOptions,
+                null,
+                null,
                 null);
         }
 

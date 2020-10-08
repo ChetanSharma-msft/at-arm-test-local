@@ -124,10 +124,6 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Tests.Helpers
         [TestMethod]
         public async Task IntroductionCardAsync_Success()
         {
-            this.cardHelper
-                 .Setup(x => x.GetUserDetailAsync(turnContext, new System.Threading.CancellationToken()))
-                 .Returns(Task.FromResult(ActivityHelperData.teamsChannelAccount));
-
             this.userProfile
                  .Setup(x => x.GetUserManagerDetailsAsync(GraphApiHelperData.AccessToken))
                  .Returns(Task.FromResult(ActivityHelperData.userProfileDetail));
@@ -171,7 +167,6 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Tests.Helpers
         [TestMethod]
         public async Task ApproveIntroductionCardAsync_Success()
         {
-            // TODO: Not working, need to check on it.
             this.introductionStorageProvider
                  .Setup(x => x.GetIntroductionDetailAsync(ActivityHelperData.NewJoinerAadObjectId, ActivityHelperData.HiringManagerAadObjectId))
                  .Returns(Task.FromResult(ActivityHelperData.introductionEntity));
@@ -249,10 +244,6 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Tests.Helpers
         [TestMethod]
         public async Task SubmitIntroductionAsync_Success()
         {
-            this.cardHelper
-                 .Setup(x => x.GetUserDetailAsync(turnContext, new System.Threading.CancellationToken()))
-                 .Returns(Task.FromResult(ActivityHelperData.teamsChannelAccount));
-
             this.userProfile
                  .Setup(x => x.GetUserManagerDetailsAsync(GraphApiHelperData.AccessToken))
                  .Returns(Task.FromResult(ActivityHelperData.userProfileDetail));
