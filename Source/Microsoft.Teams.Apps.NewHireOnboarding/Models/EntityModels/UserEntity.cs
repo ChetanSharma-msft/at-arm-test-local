@@ -68,10 +68,5 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Models.EntityModels
         /// Gets or sets unique user principal name.
         /// </summary>
         public string UserPrincipalName { get; set; }
-
-        /// <summary>
-        ///  Gets or sets email Id of the user.
-        /// </summary>
-        public string Email { get; set; }
     }
 }
