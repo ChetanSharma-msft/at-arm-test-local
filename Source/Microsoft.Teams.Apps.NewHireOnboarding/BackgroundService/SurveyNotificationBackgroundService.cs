@@ -57,14 +57,14 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.BackgroundService
                     var currentDateTime = DateTime.UtcNow;
                     this.logger.LogInformation($"Survey notification Hosted Service is running at: {currentDateTime}.");
 
-                    // To send survey notification on every Monday to new hire
+                    // To send survey notification on every Monday to new hire.
                     if (currentDateTime.DayOfWeek == DayOfWeek.Monday)
                     {
                         this.logger.LogInformation($"Monday of the week: {currentDateTime} and sending the survey notification to new hire.");
                         await this.surveyNotificationHelper.SendSurveyNotificationToNewHireAsync();
                     }
 
-                    // To send feedback notification to hiring manager on every first day of month
+                    // To send feedback notification to hiring manager on every first day of month.
                     if (currentDateTime.Day == 1)
                     {
                         this.logger.LogInformation($"First day of the month: {currentDateTime} and sending the feedback notification to hiring manager.");

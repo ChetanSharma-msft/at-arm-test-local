@@ -85,12 +85,6 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Cards
                         Title = localizer.GetString("IntroductionSubmitButtonText"),
                         Data = new AdaptiveSubmitActionData
                         {
-                            Msteams = new CardAction
-                            {
-                                Type = CardConstants.SubmitActionType,
-                                Text = BotCommandConstants.SubmitIntroductionAction,
-                            },
-                            IntroductionEntity = introductionEntity,
                             Command = BotCommandConstants.SubmitIntroductionAction,
                         },
                     },

@@ -9,9 +9,11 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.BackgroundService
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Localization;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Microsoft.Rest.Azure;
+    using Microsoft.Teams.Apps.NewHireOnboarding.Cards;
     using Microsoft.Teams.Apps.NewHireOnboarding.Helpers;
     using Microsoft.Teams.Apps.NewHireOnboarding.Models;
     using Microsoft.Teams.Apps.NewHireOnboarding.Models.Configuration;
@@ -53,6 +55,16 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.BackgroundService
         private readonly ICardHelper cardHelper;
 
         /// <summary>
+        /// The current culture's string localizer.
+        /// </summary>
+        private readonly IStringLocalizer<Strings> localizer;
+
+        /// <summary>
+        /// A set of key/value application configuration properties for bot settings.
+        /// </summary>
+        private readonly IOptions<BotOptions> botOptions;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="LearningPlanNotification"/> class.
         /// BackgroundService class that inherits IHostedService and implements the methods related to sending notification tasks.
         /// </summary>
@@ -60,13 +72,17 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.BackgroundService
         /// <param name="userStorageProvider">Provider for fetching information about user details from storage.</param>
         /// <param name="learningPlanHelper">Instance of learning plan helper.</param>
         /// <param name="sharePointOptions">A set of key/value application configuration properties for SharePoint.</param>
+        /// <param name="localizer">The current culture's string localizer.</param>
+        /// <param name="botOptions">A set of key/value application configuration properties.</param>
         /// <param name="cardHelper">Helper for working with cards.</param>
         public LearningPlanNotification(
             ILogger<LearningPlanNotification> logger,
             IUserStorageProvider userStorageProvider,
             ILearningPlanHelper learningPlanHelper,
             IOptions<SharePointSettings> sharePointOptions,
-            ICardHelper cardHelper)
+            ICardHelper cardHelper,
+            IStringLocalizer<Strings> localizer,
+            IOptions<BotOptions> botOptions)
         {
             this.logger = logger;
             this.sharePointOptions = sharePointOptions ?? throw new ArgumentNullException(nameof(sharePointOptions));
@@ -75,6 +91,8 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.BackgroundService
             this.sharePointOptions = sharePointOptions;
             this.cardHelper = cardHelper;
             this.defaultLearningPlanInWeek = sharePointOptions.Value.NewHireLearningPlansInWeeks > 0 ? sharePointOptions.Value.NewHireLearningPlansInWeeks : 4;
+            this.localizer = localizer;
+            this.botOptions = botOptions ?? throw new ArgumentNullException(nameof(botOptions));
         }
 
         /// <summary>
@@ -85,7 +103,6 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.BackgroundService
         {
             try
             {
-                var allNewHireUsers = await this.userStorageProvider.GetAllUsersAsync((int)UserRole.NewHire);
                 var completeLearningPlan = await this.learningPlanHelper.GetCompleteLearningPlansAsync();
 
                 if (completeLearningPlan == null || !completeLearningPlan.Any())
@@ -95,26 +112,60 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.BackgroundService
                     return false;
                 }
 
+                var newHires = await this.userStorageProvider.GetAllUsersAsync((int)UserRole.NewHire);
+
                 var batchStartDate = DateTime.UtcNow;
                 var learningDurationInDays = 0;
 
                 for (int i = 1; i <= this.defaultLearningPlanInWeek; i++)
                 {
-                    // To calculate weekly users list to send learning plan notification.
-                    var users = allNewHireUsers.Where(user => (batchStartDate - user.BotInstalledOn).Days > learningDurationInDays && (batchStartDate - user.BotInstalledOn).Days <= learningDurationInDays + 7).ToList();
-
-                    // To send weekly learning plan notification to new hire employees.
-                    if (users.Any())
+                    try
                     {
-                        var listCardAttachment = this.learningPlanHelper.GetLearningPlanListCard(completeLearningPlan, week: $"{BotCommandConstants.LearningPlanWeek} {i}");
-                        foreach (var userDetail in users)
-                        {
-                            await this.cardHelper.SendProActiveNotificationCardAsync(listCardAttachment, userDetail.ConversationId, userDetail.ServiceUrl);
-                        }
-                    }
+                        // To calculate weekly users list to send learning plan notification.
+                        var users = newHires.Where(user => (batchStartDate - user.BotInstalledOn).Days > learningDurationInDays && (batchStartDate - user.BotInstalledOn).Days <= learningDurationInDays + 7).ToList();
 
-                    learningDurationInDays += 7;
-                    batchStartDate.AddDays(7);
+                        // To send weekly learning plan notification to new hire employees.
+                        if (users.Any())
+                        {
+                            var learningWeek = $"{BotCommandConstants.LearningPlanWeek} {i}";
+                            var listCardAttachment = LearningPlanListCard.GetLearningPlanListCard(
+                            completeLearningPlan.Where(learningPlan => learningPlan.CompleteBy.ToUpperInvariant() == learningWeek.ToUpperInvariant()),
+                            this.localizer,
+                            this.localizer.GetString("LearningPlanWeekListCardTitleText", learningWeek),
+                            this.botOptions.Value.ManifestId,
+                            this.botOptions.Value.AppBaseUri);
+
+                            if (listCardAttachment != null)
+                            {
+                                foreach (var userDetail in users)
+                                {
+                                    try
+                                    {
+                                        await this.cardHelper.SendProActiveNotificationCardAsync(listCardAttachment, userDetail.ConversationId, userDetail.ServiceUrl);
+                                    }
+#pragma warning disable CA1031 // Catching general exceptions that might arise during execution to avoid blocking next run.
+                                    catch (Exception ex)
+#pragma warning restore CA1031 // Catching general exceptions that might arise during execution to avoid blocking next run.
+                                    {
+                                        this.logger.LogError(ex, $"Error occurred while sending learning plan for user {userDetail.AadObjectId}: {ex.Message} at: {DateTime.UtcNow}");
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                this.logger.LogWarning($"Learning plan notification card is not available for week {i}.");
+                            }
+                        }
+
+                        learningDurationInDays += 7;
+                        batchStartDate.AddDays(7);
+                    }
+#pragma warning disable CA1031 // Catching general exceptions that might arise during execution to avoid blocking next run.
+                    catch (Exception ex)
+#pragma warning restore CA1031 // Catching general exceptions that might arise during execution to avoid blocking next run.
+                    {
+                        this.logger.LogError(ex, $"Error occurred while sending learning plan for week {i}: {ex.Message} at: {DateTime.UtcNow}");
+                    }
                 }
 
                 return true;

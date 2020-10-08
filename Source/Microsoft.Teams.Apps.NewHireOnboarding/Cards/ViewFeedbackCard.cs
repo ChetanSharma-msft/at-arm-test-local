@@ -92,6 +92,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Cards
                         Weight = AdaptiveTextWeight.Bolder,
                         Size = AdaptiveTextSize.Medium,
                         Spacing = AdaptiveSpacing.Medium,
+                        Wrap = true,
                     },
                 },
             };

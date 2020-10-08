@@ -230,7 +230,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Bot
             var postedValues = JsonConvert.DeserializeObject<AdaptiveSubmitActionData>(taskModuleRequest.Data.ToString());
             var command = postedValues.Command;
 
-            var userGraphAccessToken = await this.tokenHelper.GetUserTokenAsync(activity.From.Id, DeepLinkConstants.GraphAPIBaseURL);
+            var userGraphAccessToken = await this.tokenHelper.GetUserTokenAsync(activity.From.Id);
             if (userGraphAccessToken == null)
             {
                 await this.dialog.RunAsync(turnContext, this.conversationState.CreateProperty<DialogState>(nameof(DialogState)), cancellationToken);
@@ -281,7 +281,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Bot
             var command = activity.Text.ToUpperInvariant().Trim();
             await this.SendTypingIndicatorAsync(turnContext);
 
-            var userGraphAccessToken = await this.tokenHelper.GetUserTokenAsync(activity.From.Id, DeepLinkConstants.GraphAPIBaseURL);
+            var userGraphAccessToken = await this.tokenHelper.GetUserTokenAsync(activity.From.Id);
             if (userGraphAccessToken == null)
             {
                 await this.dialog.RunAsync(turnContext, this.conversationState.CreateProperty<DialogState>(nameof(DialogState)), cancellationToken);
@@ -322,7 +322,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Bot
                         return;
                     }
 
-                    await this.learningPlanHelper.GetWeeklylearningPlanCardAsync(turnContext, userDetail.BotInstalledOn);
+                    await this.learningPlanHelper.GetWeeklyLearningPlanCardAsync(turnContext, userDetail.BotInstalledOn);
                 }
 
                 // Bot sign-out command.
@@ -396,7 +396,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Bot
                 {
                     var userDetail = await this.userStorageProvider.GetUserDetailAsync(activity.From.AadObjectId);
 
-                    await this.learningPlanHelper.GetWeeklylearningPlanCardAsync(turnContext, userDetail.BotInstalledOn);
+                    await this.learningPlanHelper.GetWeeklyLearningPlanCardAsync(turnContext, userDetail.BotInstalledOn);
                 }
 
                 // Command to resume/pause all matches.
@@ -490,7 +490,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Bot
                 return null;
             }
 
-            var userGraphAccessToken = await this.tokenHelper.GetUserTokenAsync(activity.From.Id, DeepLinkConstants.GraphAPIBaseURL);
+            var userGraphAccessToken = await this.tokenHelper.GetUserTokenAsync(activity.From.Id);
 
             if (userGraphAccessToken == null)
             {

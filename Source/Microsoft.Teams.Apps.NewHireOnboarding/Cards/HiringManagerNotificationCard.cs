@@ -183,6 +183,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Cards
                                 Weight = AdaptiveTextWeight.Bolder,
                                 Spacing = AdaptiveSpacing.Medium,
                                 Text = localizer.GetString("TeamConfirmHeaderText"),
+                                Wrap = true,
                             },
                             new AdaptiveChoiceSetInput
                             {
@@ -209,13 +210,8 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Cards
                         Title = localizer.GetString("PostInTeamButtonText"),
                         Data = new AdaptiveSubmitActionData
                         {
-                            Msteams = new CardAction
-                            {
-                                Type = CardConstants.SubmitActionType,
-                                Text = BotCommandConstants.PostTeamNotificationAction,
-                            },
-                            IntroductionEntity = introductionEntity,
                             Command = BotCommandConstants.PostTeamNotificationAction,
+                            IntroductionEntity = introductionEntity,
                         },
                     },
                 },

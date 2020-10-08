@@ -18,11 +18,6 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Cards
     public static class PairUpNotificationAdaptiveCard
     {
         /// <summary>
-        /// Default marker string in the UPN that indicates a user is externally-authenticated
-        /// </summary>
-        private const string ExternallyAuthenticatedUpnMarker = "#ext#";
-
-        /// <summary>
         /// Creates the pair-up notification card.
         /// </summary>
         /// <param name="sender">The user who will be sending this card.</param>
@@ -34,12 +29,9 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Cards
             sender = sender ?? throw new ArgumentNullException(nameof(sender));
             recipient = recipient ?? throw new ArgumentNullException(nameof(recipient));
 
-            // To start a chat with a guest user, use their external email, not the UPN
-            var recipientUpn = !IsGuestUser(recipient) ? recipient.UserPrincipalName : recipient.Email;
-
             var meetingTitle = localizer.GetString("MeetupTitle", sender.Name, recipient.Name);
             var meetingContent = localizer.GetString("MeetupContent", localizer.GetString("AppTitle"));
-            var meetingLink = "https://teams.microsoft.com/l/meeting/new?subject=" + Uri.EscapeDataString(meetingTitle) + "&attendees=" + recipientUpn + "&content=" + Uri.EscapeDataString(meetingContent);
+            var meetingLink = $"{DeepLinkConstants.MeetingLink}{Uri.EscapeDataString(meetingTitle)}&attendees={recipient.UserPrincipalName}&content={Uri.EscapeDataString(meetingContent)}";
             var encodedMessage = Uri.EscapeDataString(localizer.GetString("InitiateChatText"));
 
             AdaptiveCard pairUpNotificationCard = new AdaptiveCard(CardConstants.AdaptiveCardVersion)
@@ -75,7 +67,7 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Cards
                     new AdaptiveOpenUrlAction
                     {
                         Title = localizer.GetString("ChatWithMatchButtonText", recipient.Name),
-                        Url = new Uri($"{DeepLinkConstants.ChatInitiateURL}/0/0?users={Uri.EscapeDataString(recipientUpn)}&message={encodedMessage}"),
+                        Url = new Uri($"{DeepLinkConstants.ChatInitiateURL}/0/0?users={Uri.EscapeDataString(recipient.UserPrincipalName)}&message={encodedMessage}"),
                     },
                     new AdaptiveOpenUrlAction
                     {
@@ -103,16 +95,6 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Cards
                 ContentType = AdaptiveCard.ContentType,
                 Content = pairUpNotificationCard,
             };
-        }
-
-        /// <summary>
-        /// Checks whether or not the account is a guest user.
-        /// </summary>
-        /// <param name="account">The <see cref="UserEntity"/> user to check.</param>
-        /// <returns>True if the account is a guest user, false otherwise.</returns>
-        private static bool IsGuestUser(UserEntity account)
-        {
-            return account.UserPrincipalName.IndexOf(ExternallyAuthenticatedUpnMarker, StringComparison.InvariantCultureIgnoreCase) >= 0;
         }
     }
 }

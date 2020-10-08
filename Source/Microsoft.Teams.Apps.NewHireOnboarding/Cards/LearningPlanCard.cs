@@ -34,13 +34,11 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Cards
         /// </summary>
         /// <param name="localizer">The current culture's string localizer.</param>
         /// <param name="appBasePath">Application base uri to create image path.</param>
-        /// <param name="completeLearningPlanPath">Complete learning plan SharePoint URL.</param>
         /// <param name="learningPlan">Learning plan details.</param>
         /// <returns>New hire learning card attachment.</returns>
         public static Attachment GetNewHireLearningCard(
             IStringLocalizer<Strings> localizer,
             string appBasePath,
-            string completeLearningPlanPath,
             LearningPlanListItemField learningPlan)
         {
             learningPlan = learningPlan ?? throw new ArgumentNullException(nameof(learningPlan));
@@ -75,10 +73,10 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Cards
                                     },
                                     new AdaptiveImage
                                     {
-                                        Url = string.IsNullOrEmpty(learningPlan.TaskImage?.Url)
+                                        Url = string.IsNullOrEmpty(learningPlan.TaskImage.Url)
                                         ? new Uri($"{appBasePath}/Artifacts/learningPlan.png")
-                                        : new Uri(learningPlan.TaskImage?.Url),
-                                        AltText = learningPlan?.Notes,
+                                        : new Uri(learningPlan.TaskImage.Url),
+                                        AltText = learningPlan.Notes,
                                         PixelHeight = ImageHeight,
                                         PixelWidth = ImageWidth,
                                     },
@@ -99,19 +97,19 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Cards
             var actionDataUrl = learningPlan?.Link?.Url?.Replace("/", "~2F", StringComparison.InvariantCultureIgnoreCase);
             var filExtension = string.Empty;
 
-            if (!string.IsNullOrEmpty(learningPlan?.Link.Url))
+            if (!string.IsNullOrEmpty(learningPlan?.Link?.Url))
             {
                 filExtension = GetFileExtensionFromUrl(learningPlan?.Link?.Url)?.Split(".")[1];
-            }
 
-            card.Actions.Add(
-               new AdaptiveOpenUrlAction
-               {
-                   Title = localizer.GetString("ViewLearningPlanButtonText"),
-                   Url = string.IsNullOrEmpty(learningPlan?.Link?.Url)
-                    ? new Uri(completeLearningPlanPath)
+                card.Actions.Add(
+                    new AdaptiveOpenUrlAction
+                    {
+                        Title = localizer.GetString("ViewLearningPlanButtonText"),
+                        Url = string.IsNullOrEmpty(filExtension)
+                    ? new Uri(learningPlan.Link.Url)
                     : new Uri(string.Format(CultureInfo.InvariantCulture, DeepLinkConstants.OpenFileInTeamsURL, filExtension, actionDataUrl)),
-               });
+                    });
+            }
 
             card.Actions.Add(
                 new AdaptiveSubmitAction

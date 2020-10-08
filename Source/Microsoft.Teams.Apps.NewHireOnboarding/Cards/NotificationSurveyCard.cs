@@ -70,13 +70,6 @@ namespace Microsoft.Teams.Apps.NewHireOnboarding.Cards
                                         Text = localizer.GetString("CardContentText"),
                                         Wrap = true,
                                     },
-                                    new AdaptiveTextBlock
-                                    {
-                                        Weight = AdaptiveTextWeight.Bolder,
-                                        Size = AdaptiveTextSize.Large,
-                                        Spacing = AdaptiveSpacing.Medium,
-                                        Text = localizer.GetString("QuestionsTitleText"),
-                                    },
                                 },
                             },
                             new AdaptiveColumn
